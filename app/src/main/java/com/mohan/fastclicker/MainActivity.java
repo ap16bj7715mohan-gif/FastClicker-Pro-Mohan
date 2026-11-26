@@ -5,8 +5,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.graphics.Color;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.*;
+import android.text.InputType;
 
 public class MainActivity extends Activity {
 
@@ -19,18 +19,18 @@ public class MainActivity extends Activity {
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(30, 35, 30, 30);
+        layout.setPadding(25, 30, 25, 30);
         layout.setBackgroundColor(Color.WHITE);
 
         TextView title = new TextView(this);
         title.setText("FastClicker Pro Mohan");
-        title.setTextSize(26);
+        title.setTextSize(25);
         title.setTextColor(Color.BLACK);
         title.setGravity(Gravity.CENTER);
         layout.addView(title);
 
         TextView subtitle = new TextView(this);
-        subtitle.setText("Ride Filter Settings");
+        subtitle.setText("Rapido Ride Filter Settings");
         subtitle.setTextSize(18);
         subtitle.setGravity(Gravity.CENTER);
         layout.addView(subtitle);
@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
         minRate = addInput(layout, "Minimum Rate per KM (₹)");
 
         Button check = new Button(this);
-        check.setText("CHECK RIDE");
+        check.setText("CHECK RAPIDO RIDE");
         layout.addView(check);
 
         result = new TextView(this);
@@ -48,39 +48,32 @@ public class MainActivity extends Activity {
         result.setPadding(10, 25, 10, 25);
         layout.addView(result);
 
-        check.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    double fare = Double.parseDouble(
-                        minFare.getText().toString());
-                    double distance = Double.parseDouble(
-                        maxDistance.getText().toString());
-                    double rate = Double.parseDouble(
-                        minRate.getText().toString());
+        check.setOnClickListener(v -> {
+            try {
+                double fare = Double.parseDouble(minFare.getText().toString());
+                double distance = Double.parseDouble(maxDistance.getText().toString());
+                double rate = Double.parseDouble(minRate.getText().toString());
 
-                    if (fare < 0 || distance <= 0 || rate < 0) {
-                        result.setText("Enter valid filter values");
-                        return;
-                    }
-
-                    double perKm = fare / distance;
-
-                    if (fare >= rate * distance) {
-                        result.setText(
-                            "RIDE MATCHED!\nFare: ₹" + fare +
-                            "\nDistance: " + distance + " KM" +
-                            "\nRate: ₹" + String.format("%.2f", perKm)
-                            + " / KM");
-                        result.setTextColor(Color.rgb(0, 130, 0));
-                    } else {
-                        result.setText("RIDE NOT MATCHED");
-                        result.setTextColor(Color.RED);
-                    }
-
-                } catch (Exception e) {
-                    result.setText("Please enter all values");
+                if (fare <= 0 || distance <= 0 || rate <= 0) {
+                    result.setText("Enter valid values");
+                    return;
                 }
+
+                double perKm = fare / distance;
+
+                if (fare >= 100 && distance <= 10 && perKm >= rate) {
+                    result.setText("RIDE MATCHED!\nFare: ₹" + fare
+                            + "\nDistance: " + distance
+                            + " KM\nRate: ₹" + String.format("%.2f", perKm)
+                            + "/KM");
+                    result.setTextColor(Color.rgb(0,130,0));
+                } else {
+                    result.setText("RIDE NOT MATCHED");
+                    result.setTextColor(Color.RED);
+                }
+
+            } catch (Exception e) {
+                result.setText("Please enter all values");
             }
         });
 
@@ -90,7 +83,8 @@ public class MainActivity extends Activity {
     private EditText addInput(LinearLayout layout, String hint) {
         EditText input = new EditText(this);
         input.setHint(hint);
-        input.setInputType(8194);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER
+                | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         layout.addView(input);
         return input;
     }
